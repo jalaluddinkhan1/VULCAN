@@ -1,7 +1,7 @@
 # ADR-002: Kernel Fusion Strategy
 
 ## Status
-**Accepted** — Implemented in Phase 5
+**Accepted** — Implemented
 
 ## Context
 The Llama-2 transformer layer consists of many small operations that are individually memory-bandwidth-bound on modern GPUs. Each operation reads from and writes to HBM (GPU global memory), but the intermediate results are only used by the immediately following operation. This creates unnecessary bandwidth pressure.

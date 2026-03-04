@@ -1,6 +1,6 @@
 # VULCAN — Custom C++/CUDA LLM Inference Engine
 
-A production-grade inference engine for large language models, built from scratch in C++ and CUDA. Designed for maximum throughput and minimal memory footprint on NVIDIA GPUs.
+An inference engine for large language models, built from scratch in C++ and CUDA. Designed for maximum throughput and minimal memory footprint on NVIDIA GPUs.
 
 ---
 
@@ -34,12 +34,14 @@ A production-grade inference engine for large language models, built from scratc
 
 | Feature | Description |
 |---|---|
-| **Custom CUDA Kernels** | Hand-written GEMM, FlashAttention v2, fused RMSNorm |
-| **Paged KV Cache** | vLLM-inspired memory management for long contexts |
-| **INT4 Quantization** | 4-bit weight dequantization in registers |
-| **Kernel Fusion** | Fused Norm + MatMul + Bias to reduce kernel launch overhead |
-| **RAII Memory** | Zero-leak GPU memory management with `GPUBuffer` wrappers |
-| **Golden Tests** | Every kernel validated against PyTorch reference output |
+| **Custom CUDA Kernels** | 15+ hand-written kernels: GEMM, RMSNorm, RoPE, Softmax, SiLU, Attention |
+| **Grouped Query Attention (GQA)** | Multi-head and grouped-query attention with causal masking |
+| **KV Cache** | Pre-allocated per-layer GPU buffers for incremental decode |
+| **Paged Memory Manager** | vLLM-inspired paged GPU allocator with CPU swap support |
+| **INT4 Quantization** | Group-wise symmetric 4-bit weight quantization with in-register dequant |
+| **Kernel Fusion** | Fused SiLU×Up, RMSNorm+Linear, Residual+RMSNorm, Quantized MatMul |
+| **RAII Memory** | Zero-leak GPU memory management with `GPUBuffer` and `Tensor` wrappers |
+| **Golden Tests** | Every kernel validated against CPU reference output via GoogleTest |
 
 ## Build
 
@@ -70,14 +72,15 @@ ctest --output-on-failure
 vulcan-inference/
 ├── CMakeLists.txt              # Build configuration (C++17, CUDA 12)
 ├── include/vulcan/             # Public C++ API headers
-├── include/cuda/               # CUDA utility headers
-├── src/                        # C++ implementation
+├── include/cuda/               # CUDA utility and kernel declaration headers
+├── src/                        # C++ implementation (engine, model, transformer, sampler)
 ├── cuda/                       # CUDA kernel implementations (.cu)
-├── tests/                      # GoogleTest unit tests
-├── benchmarks/                 # Performance benchmarks
-├── tools/                      # Model conversion & inspection utilities
-├── docs/ADRs/                  # Architecture Decision Records
-└── third_party/                # Minimal external dependencies
+├── tests/                      # GoogleTest unit tests (50+ cases)
+├── benchmarks/                 # Performance benchmarks (inference, memory)
+├── tools/                      # Model conversion, quantization & inspection utilities
+├── docs/ADRs/                  # Architecture Decision Records (memory, fusion, quantization)
+├── docs/profiling/             # Kernel performance metrics and profiling results
+└── third_party/                # Minimal external dependencies (pybind11)
 ```
 
 ## Version History
@@ -92,10 +95,12 @@ See [docs/profiling/README.md](docs/profiling/README.md) for detailed performanc
 
 | Metric | VULCAN V0.1.0 |
 |---|---|
-| **Kernels** | 15 Hand-written CUDA kernels |
+| **Kernels** | 15+ Hand-written CUDA kernels |
+| **Attention** | Causal MHA/GQA with KV Cache |
 | **Quantization** | INT4 Group-wise Symmetric |
-| **Memory** | Paged KV Cache (vLLM style) |
-| **Interface** | C++ API + Python Bindings |
+| **Memory** | Pre-allocated KV Cache + Paged Allocator |
+| **Fusion** | 4 fused kernels (SiLU×Up, RMSNorm+Linear, Residual+RMSNorm, QuantMatMul) |
+| **Interface** | C++ API + Python Bindings (pybind11) |
 
 
 ## License

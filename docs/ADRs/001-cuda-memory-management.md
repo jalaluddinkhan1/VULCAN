@@ -1,7 +1,7 @@
 # ADR-001: CUDA Memory Management Strategy
 
 ## Status
-**Accepted** — Implemented in Phase 4
+**Accepted** — Implemented
 
 ## Context
 LLM inference requires managing large, dynamically-sized GPU memory allocations (primarily for KV cache). The KV cache grows with sequence length and varies across requests in a serving scenario. Naive allocation leads to:

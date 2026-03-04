@@ -78,7 +78,7 @@ ncu --metrics sm__throughput.avg.pct_of_peak_sustained_active ./benchmarks/bench
 
 ### Kernel Launch Overhead
 Target: <10 μs per kernel launch.
-- Use fused kernels to reduce launch count (Phase 5)
+- Use fused kernels to reduce launch count
 - CUDA graphs for fixed-topology launch sequences (future)
 
 ## Architecture-Specific Notes

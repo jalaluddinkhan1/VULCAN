@@ -1,7 +1,6 @@
 # ADR-003: Quantization Format
 
-## Status
-**Accepted** — Implemented in Phase 5
+
 
 ## Context
 Llama-2-7B has ~7 billion parameters. In FP32, this requires ~28 GB of VRAM — exceeding most consumer GPUs. Even FP16 (14 GB) is tight. INT4 quantization reduces weight storage to ~3.5 GB, enabling inference on 8 GB GPUs.
