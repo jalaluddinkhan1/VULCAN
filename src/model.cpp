@@ -132,6 +132,7 @@ void Model::print_summary() const {
     std::cout << "║  Num KV Heads:  " << config_.num_kv_heads << std::endl;
     std::cout << "║  Num Layers:    " << config_.num_layers << std::endl;
     std::cout << "║  Max Seq Len:   " << config_.max_seq_len << std::endl;
+    std::cout << "║  RoPE Theta:    " << config_.rope_theta << std::endl;
     std::cout << "║  Num Weights:   " << weights_.size() << std::endl;
 
     size_t total_params = 0;

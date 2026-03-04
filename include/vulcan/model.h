@@ -24,6 +24,7 @@ struct ModelConfig {
     int max_seq_len   = 4096;    ///< Maximum sequence length
     int intermediate  = 11008;   ///< MLP intermediate dimension
     float norm_eps    = 1e-5f;   ///< RMSNorm epsilon
+    float rope_theta  = 10000.0f; ///< RoPE base frequency (Llama-2: 10000, Llama-3: 500000)
 };
 
 /// @class Model

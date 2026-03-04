@@ -39,6 +39,7 @@ PYBIND11_MODULE(vulcan, m) {
         .def_readwrite("vocab_size", &vulcan::ModelConfig::vocab_size)
         .def_readwrite("intermediate", &vulcan::ModelConfig::intermediate)
         .def_readwrite("norm_eps", &vulcan::ModelConfig::norm_eps)
+        .def_readwrite("rope_theta", &vulcan::ModelConfig::rope_theta)
         .def_readwrite("max_seq_len", &vulcan::ModelConfig::max_seq_len)
         .def("__repr__", [](const vulcan::ModelConfig& c) {
             return "<ModelConfig hidden=" + std::to_string(c.hidden_dim) +
