@@ -14,8 +14,15 @@ if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
 endif()
 
 # ─── Compiler Flags ─────────────────────────────────────────────────────────
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+endif()
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr")
+
+# Use static CUDA runtime for hermetic builds
+set(CMAKE_CUDA_RUNTIME_LIBRARY Static)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -G -g")
