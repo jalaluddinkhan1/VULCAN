@@ -80,16 +80,23 @@ vulcan-inference/
 └── third_party/                # Minimal external dependencies
 ```
 
-## Development Phases
+## Version History
 
-| Phase | Focus | Status |
-|---|---|---|
-| 1 | Foundation: Build system, Tensor, vector_add | **In Progress** |
-| 2 | Basic Operators: MatMul, SiLU, RMSNorm | Planned |
-| 3 | Transformer Block: Attention, MLP, Integration | Planned |
-| 4 | Memory & KV Cache: Paged allocation, swapping | Planned |
-| 5 | Quantization & Fusion: INT4, kernel fusion | Planned |
-| 6 | Polish & Benchmark: Profiling, Python bindings | Planned |
+| Version | Description | Date | Status |
+|---|---|---|---|
+| **V0.1.0** | Initial stable release: full Llama-2 inference engine | 2026-03-04 | **Stable** ✅ |
+
+## System Benchmarks (V0.1.0)
+
+See [docs/profiling/README.md](docs/profiling/README.md) for detailed performance metrics across all 15+ kernels.
+
+| Metric | VULCAN V0.1.0 |
+|---|---|
+| **Kernels** | 15 Hand-written CUDA kernels |
+| **Quantization** | INT4 Group-wise Symmetric |
+| **Memory** | Paged KV Cache (vLLM style) |
+| **Interface** | C++ API + Python Bindings |
+
 
 ## License
 
