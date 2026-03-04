@@ -118,13 +118,13 @@ Tensor TransformerBlock::self_attention(const Tensor& normed_input,
             int q_offset = t * hidden_dim + h * head_dim;
             cuda::launch_rope(Q.data() + q_offset,
                               Q.data() + q_offset,
-                              pos, head_dim);
+                              pos, head_dim, config_.rope_theta);
         }
         for (int h = 0; h < num_kv_heads; ++h) {
             int k_offset = t * kv_dim + h * head_dim;
             cuda::launch_rope(K_new.data() + k_offset,
                               K_new.data() + k_offset,
-                              pos, head_dim);
+                              pos, head_dim, config_.rope_theta);
         }
     }
 
@@ -216,12 +216,11 @@ Tensor TransformerBlock::mlp(const Tensor& normed_input, int num_tokens) {
     cuda::launch_matmul(normed_input.data(), w3.data(), up.data(),
                         num_tokens, hidden_dim, intermediate);
 
-    Tensor gate_activated({num_tokens, intermediate}, Device::CUDA);
-    cuda::launch_silu(gate.data(), gate_activated.data(), inter_total);
-
+    // Fused SiLU(gate) * up — eliminates intermediate buffer + 1 kernel launch
+    // (See ADR-002 and tests/test_quantization.cu FusedSiLUMulTest)
     Tensor gated({num_tokens, intermediate}, Device::CUDA);
-    cuda::launch_elementwise_mul(gate_activated.data(), up.data(),
-                                 gated.data(), inter_total);
+    cuda::launch_fused_silu_mul(gate.data(), up.data(),
+                                gated.data(), inter_total);
 
     Tensor output({num_tokens, hidden_dim}, Device::CUDA);
     cuda::launch_matmul(gated.data(), w2.data(), output.data(),
