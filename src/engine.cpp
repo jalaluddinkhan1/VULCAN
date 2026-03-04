@@ -53,7 +53,7 @@ bool Engine::load_model(const std::string& path, const ModelConfig& config) {
     int head_dim = config.hidden_dim / config.num_heads;
     kv_cache_ = std::make_unique<KVCache>(
         config.num_kv_heads,
-        2048,            // max_seq_len (configurable via GenerationConfig)
+        config.max_seq_len,  // Use configured max sequence length
         head_dim,
         config.num_layers
     );
