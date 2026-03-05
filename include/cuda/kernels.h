@@ -22,7 +22,7 @@ void launch_vector_add(const float* a, const float* b, float* c, int n);
 
 // ─── Basic Operators ────────────────────────────────────────────────────────
 
-/// Launch tiled matrix multiplication: C = A * B
+/// Launch tiled matrix multiplication: C = A * B  (scalar CUDA cores)
 /// @param A     Input matrix A [M x K] (device, row-major)
 /// @param B     Input matrix B [K x N] (device, row-major)
 /// @param C     Output matrix C [M x N] (device, row-major)
@@ -31,6 +31,22 @@ void launch_vector_add(const float* a, const float* b, float* c, int n);
 /// @param N     Columns of B
 void launch_matmul(const float* A, const float* B, float* C,
                    int M, int K, int N);
+
+/// Launch Tensor Core GEMM: C = A * B  (FP16 compute, FP32 accumulate, SM 7.0+)
+///
+/// Uses nvcuda::wmma 16×16×16 fragments to route work through Tensor Cores on
+/// Volta/Turing/Ampere/Ada GPUs.  2–4× faster than launch_matmul for
+/// transformer-scale matrices.  Automatically falls back to launch_matmul when
+/// any dimension is < 16.
+///
+/// @param A     Input matrix A [M x K] (device, row-major, float32)
+/// @param B     Input matrix B [K x N] (device, row-major, float32)
+/// @param C     Output matrix C [M x N] (device, row-major, float32)
+/// @param M     Rows of A
+/// @param K     Shared dimension
+/// @param N     Columns of B
+void launch_matmul_wmma(const float* A, const float* B, float* C,
+                        int M, int K, int N);
 
 /// Launch SiLU (Swish) activation: y[i] = x[i] * sigmoid(x[i])
 /// @param input   Input array (device pointer)
