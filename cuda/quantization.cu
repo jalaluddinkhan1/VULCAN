@@ -44,7 +44,7 @@ __global__ void dequantize_int4_kernel(const uint8_t* __restrict__ input,
     int byte_idx = idx;  // Each thread processes one byte → two elements
     int out_idx = byte_idx * 2;
 
-    if (out_idx + 1 >= n) return;
+    if (out_idx >= n) return;
 
     uint8_t packed = input[byte_idx];
 
@@ -52,13 +52,15 @@ __global__ void dequantize_int4_kernel(const uint8_t* __restrict__ input,
     int low  = static_cast<int>(packed & 0x0F) - 8;   // Map [0,15] → [-8,7]
     int high = static_cast<int>(packed >> 4) - 8;
 
-    // Look up group scale
-    int group_low  = out_idx / group_size;
-    int group_high = (out_idx + 1) / group_size;
+    // Look up group scale and dequantize low element (always valid)
+    int group_low = out_idx / group_size;
+    output[out_idx] = static_cast<float>(low) * scales[group_low];
 
-    // Dequantize
-    output[out_idx]     = static_cast<float>(low) * scales[group_low];
-    output[out_idx + 1] = static_cast<float>(high) * scales[group_high];
+    // High element may not exist when n is odd
+    if (out_idx + 1 < n) {
+        int group_high = (out_idx + 1) / group_size;
+        output[out_idx + 1] = static_cast<float>(high) * scales[group_high];
+    }
 }
 
 // ─── Host Wrapper ───────────────────────────────────────────────────────────

@@ -45,6 +45,11 @@ int Sampler::sample(const float* logits, int vocab_size) {
     float sum = std::accumulate(probs.begin(), probs.end(), 0.0f);
     if (sum > 0.0f) {
         for (float& p : probs) p /= sum;
+    } else {
+        // All probabilities were zeroed out — fall back to greedy argmax
+        return static_cast<int>(
+            std::max_element(logits, logits + vocab_size) - logits
+        );
     }
 
     // Sample from the filtered distribution
