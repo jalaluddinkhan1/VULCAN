@@ -78,7 +78,7 @@ if(VULCAN_BUILD_PYTHON)
         FetchContent_MakeAvailable(pybind11)
     endif()
 
-    pybind11_add_module(pyvulcan src/pybind_vulcan.cpp)
+    pybind11_add_module(pyvulcan vulcan_bindings.cpp)
     target_link_libraries(pyvulcan PRIVATE vulcan)
     set_target_properties(pyvulcan PROPERTIES
         OUTPUT_NAME "vulcan"
